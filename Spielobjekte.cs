@@ -43,39 +43,76 @@ namespace Asteroids_T22_B
     class Asteroid : Spielobjekte
     {
         static Random rnd = new Random();
-
+        Polygon umriss;
         public Asteroid(Canvas Zeichenfläche)
             : base (rnd.NextDouble()*Zeichenfläche.ActualWidth,
                     rnd.NextDouble()*Zeichenfläche.ActualHeight,
                     rnd.NextDouble()*200-100,
                     rnd.NextDouble()*200-100)
         {
-
+            umriss = new Polygon();
+            for (int i = 0; i < 17; i++)
+            {
+                double radius = 7 + 9 * rnd.NextDouble();
+                double winkel = 2 * Math.PI / 17 * i;
+                umriss.Points.Add(new Point(radius * Math.Cos(winkel),
+                                            radius * Math.Sin(winkel)));
+            }
+            umriss.Fill = Brushes.Gray;
         }
 
         public override void Draw(Canvas Zeichenfläche)
-        {
-            Polygon umriss = new Polygon();
-            for (int i = 0; i < 5; i++)
-            {
-                double radius = 10;
-                double winkel = 2 * Math.PI / 5 * i;
-                umriss.Points.Add(new Point(radius*Math.Cos(winkel),
-                                            radius*Math.Sin(winkel)));
-            }
-
-
-            umriss.Fill = Brushes.Gray;
+        {            
             Zeichenfläche.Children.Add(umriss);
             Canvas.SetLeft(umriss, x);
             Canvas.SetTop(umriss, y);
         }
     }
 
-    //class Raumschiff : Spielobjekte
-    //{
+    class Raumschiff : Spielobjekte
+    {
+        Polygon umriss;
+        public Raumschiff(Canvas Zeichenfläche)
+            : base(Zeichenfläche.ActualWidth/2, Zeichenfläche.ActualHeight/2,
+                   1,1)
+        {
+            umriss = new Polygon();
+            umriss.Points.Add(new Point(0, -10));
+            umriss.Points.Add(new Point(5, 7));
+            umriss.Points.Add(new Point(-5, 7));
+            umriss.Fill = Brushes.Blue;
+        }
 
-    //}
+ 
+
+        public override void Draw(Canvas Zeichenfläche)
+        {
+            double winkel = Math.Atan2(vy, vx) * 180 / Math.PI+90;
+            umriss.RenderTransform = new RotateTransform(winkel);
+            Zeichenfläche.Children.Add(umriss);
+            Canvas.SetLeft(umriss, x);
+            Canvas.SetTop(umriss, y);
+        }
+
+        public void Accelerate(bool schneller)
+        {
+            double faktor = schneller ? 1.1 : 0.9;           
+            vx *= faktor;
+            vy *= faktor;
+        }
+
+        public void Steer(bool nachLinks)
+        {
+            double winkel = (nachLinks ? -5 : 5) * Math.PI / 180;
+            double cos = Math.Cos(winkel);
+            double sin = Math.Sin(winkel);
+            double vxn, vyn;
+            vxn = vx * cos - vy * sin;
+            vyn = vx * sin + vy * cos;
+            vx = vxn;
+            vy = vyn;
+        }
+    }
 
     //class Torpedo : Spielobjekte
     //{

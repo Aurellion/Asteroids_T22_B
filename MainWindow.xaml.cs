@@ -22,6 +22,7 @@ namespace Asteroids_T22_B
     public partial class MainWindow : Window
     {
         List<Asteroid> Asteroiden = new List<Asteroid>();
+        Raumschiff Enterprise;
         DispatcherTimer timer = new DispatcherTimer();
         public MainWindow()
         {
@@ -39,6 +40,8 @@ namespace Asteroids_T22_B
                 item.Draw(Zeichenfläche);
                 item.Move(timer.Interval, Zeichenfläche);
             }
+            Enterprise.Draw(Zeichenfläche);
+            Enterprise.Move(timer.Interval, Zeichenfläche);
         }
 
         private void Btn_Start_Click(object sender, RoutedEventArgs e)
@@ -48,7 +51,35 @@ namespace Asteroids_T22_B
             {
                 Asteroiden.Add(new Asteroid(Zeichenfläche));
             }
+            Enterprise = new Raumschiff(Zeichenfläche);
+
             Btn_Start.IsEnabled = false;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(!Btn_Start.IsEnabled)
+            {
+                switch (e.Key)
+                {
+                    case Key.Up:
+                    case Key.W:
+                        Enterprise.Accelerate(true);
+                        break;
+                    case Key.Down:
+                    case Key.S:
+                        Enterprise.Accelerate(false);
+                        break;
+                    case Key.Left:
+                    case Key.A:
+                        Enterprise.Steer(true);
+                        break;
+                    case Key.Right:
+                    case Key.D:
+                        Enterprise.Steer(false);
+                        break;
+                }
+            }
         }
     }
 }
